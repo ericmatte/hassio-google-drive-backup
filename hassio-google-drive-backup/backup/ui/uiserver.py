@@ -551,11 +551,13 @@ class UiServer(Trigger, Startable):
         self._starts += 1
 
     def _addRoutes(self, app):
-        app.add_routes(
-            [web.static('/static', abspath(join(__file__, "..", "..", "static")), append_version=True)])
-        app.add_routes([web.get('/', self.index)])
-        app.add_routes([web.get('/index.html', self.index)])
-        app.add_routes([web.get('/index', self.index)])
+        app.add_routes([
+            web.static('/static', abspath(join(__file__, "..", "..", "static")), append_version=True),
+            web.get('/', self.index),
+            web.get('/index.html', self.index),
+            web.get('/index', self.index),
+        ])
+
         self._addRoute(app, self.reauthenticate)
         self._addRoute(app, self.tos)
         self._addRoute(app, self.pp)

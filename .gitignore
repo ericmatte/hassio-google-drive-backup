@@ -12,3 +12,6 @@ dev/error.py
 dev/data/retained.json
 *.egg-info
 hassio-google-drive-backup/dev/data/id.json
+node_modules
+
+hassio-google-drive-backup/backup/frontend/public
