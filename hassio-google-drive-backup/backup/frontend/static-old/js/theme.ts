@@ -1,6 +1,10 @@
 const themeStyleContainer = document.getElementById('theme');
 
 class Color {
+  a: any;
+  b: any;
+  g: any;
+  r: any;
   constructor(r = 0, g = 0, b = 0, a = 1) {
     this.r = this._clamp(r);
     this.g = this._clamp(g);
@@ -20,7 +24,7 @@ class Color {
     return new Color(128, 128, 128);
   }
 
-  static hexToRgb(hex) {
+  static hexToRgb(hex: any) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
       ? {
@@ -31,12 +35,13 @@ class Color {
       : null;
   }
 
-  static parse(color) {
+  static parse(color: any) {
     const rgb = this.hexToRgb(color);
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     return new Color(rgb.r, rgb.g, rgb.b);
   }
 
-  tint(to, amount) {
+  tint(to: any, amount: any) {
     amount = this._clamp(amount, 0, 1);
 
     const r_new = this.r + (to.r - this.r) * amount;
@@ -46,15 +51,15 @@ class Color {
     return new Color(r_new, g_new, b_new, a_new);
   }
 
-  darken(amount) {
+  darken(amount: any) {
     return this.tint(Color.black(), amount);
   }
 
-  lighten(amount) {
+  lighten(amount: any) {
     return this.tint(Color.white(), amount);
   }
 
-  saturate(change) {
+  saturate(change: any) {
     const Pr = 0.299;
     const Pg = 0.587;
     const Pb = 0.114;
@@ -68,7 +73,7 @@ class Color {
     return new Color(R, G, B, this.a);
   }
 
-  _clamp(value, min = 0, max = 255) {
+  _clamp(value: any, min = 0, max = 255) {
     if (value > max) {
       return max;
     }
@@ -93,7 +98,7 @@ class Color {
   }
 
   toHex() {
-    const componentToHex = (c) => {
+    const componentToHex = (c: any) => {
       var hex = c.toString(16);
       return hex.length == 1 ? '0' + hex : hex;
     };
@@ -127,7 +132,7 @@ class Color {
     return 0.2126 * rg + 0.7152 * gg + 0.0722 * bg;
   }
 
-  contrast(other) {
+  contrast(other: any) {
     let big = this.luminance();
     let small = other.luminance();
 
@@ -140,12 +145,12 @@ class Color {
     return (big + 0.05) / (small + 0.05);
   }
 
-  withAlpha(alpha) {
+  withAlpha(alpha: any) {
     return new Color(this.r, this.g, this.b, alpha);
   }
 }
 
-function setColors(background, accent) {
+function setColors(background: any, accent: any) {
   const text = background.textColor();
   const accentText = accent.textColor();
   const contrastThreshold = 4.5;
@@ -312,17 +317,22 @@ function setColors(background, accent) {
   };
 
   const properties = Object.keys(styleSheet).map((selector) => {
+    // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
     const selectorProperties = Object.keys(styleSheet[selector]).map(
+      // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
       (property) => `    ${property}: ${styleSheet[selector][property]};`
     );
 
     return `${selector} {\n${selectorProperties.join('\n')}\n}`;
   });
 
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   themeStyleContainer.innerHTML = properties.join('\n');
 }
 
 setColors(
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   Color.parse(themeStyleContainer.dataset.backgroundColor),
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   Color.parse(themeStyleContainer.dataset.accentColor)
 );
