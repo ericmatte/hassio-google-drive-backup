@@ -12,9 +12,12 @@
   "files.associations": {
     "*.jinja2": "html"
   },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
   "[html]": {
     "editor.defaultFormatter": "vscode.html-language-features",
-    "editor.tabSize": 2,
+    "editor.tabSize": 2
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",

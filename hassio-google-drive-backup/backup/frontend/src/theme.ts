@@ -1,10 +1,17 @@
-const themeStyleContainer = document.getElementById('theme');
+const themeStyleContainer = document.getElementById("theme");
+
+type RGB = {
+  r: number;
+  g: number;
+  b: number;
+};
 
 class Color {
-  a: any;
-  b: any;
-  g: any;
-  r: any;
+  private a: number;
+  private b: number;
+  private g: number;
+  private r: number;
+
   constructor(r = 0, g = 0, b = 0, a = 1) {
     this.r = this._clamp(r);
     this.g = this._clamp(g);
@@ -24,7 +31,7 @@ class Color {
     return new Color(128, 128, 128);
   }
 
-  static hexToRgb(hex: any) {
+  static hexToRgb(hex: string): RGB | null {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
       ? {
@@ -35,13 +42,12 @@ class Color {
       : null;
   }
 
-  static parse(color: any) {
+  static parse(color: string): Color {
     const rgb = this.hexToRgb(color);
-    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    return new Color(rgb.r, rgb.g, rgb.b);
+    return new Color(rgb?.r, rgb?.g, rgb?.b);
   }
 
-  tint(to: any, amount: any) {
+  tint(to: Color, amount: number) {
     amount = this._clamp(amount, 0, 1);
 
     const r_new = this.r + (to.r - this.r) * amount;
@@ -63,9 +69,7 @@ class Color {
     const Pr = 0.299;
     const Pg = 0.587;
     const Pb = 0.114;
-    const P = Math.sqrt(
-      this.r * this.r * Pr + this.g * this.g * Pg + this.b * this.b * Pb
-    );
+    const P = Math.sqrt(this.r * this.r * Pr + this.g * this.g * Pg + this.b * this.b * Pb);
 
     const R = this._clamp(P + (this.r - P) * change);
     const G = this._clamp(P + (this.g - P) * change);
@@ -73,7 +77,7 @@ class Color {
     return new Color(R, G, B, this.a);
   }
 
-  _clamp(value: any, min = 0, max = 255) {
+  _clamp(value: number, min = 0, max = 255) {
     if (value > max) {
       return max;
     }
@@ -84,31 +88,18 @@ class Color {
   }
 
   toCss() {
-    return (
-      'rgba(' +
-      Math.floor(this.r) +
-      ',' +
-      Math.floor(this.g) +
-      ',' +
-      Math.floor(this.b) +
-      ',' +
-      this.a +
-      ')'
-    );
+    return `rgba(${Math.floor(this.r)},${Math.floor(this.g)},${Math.floor(this.b)},${Math.floor(this.a)})`;
   }
 
   toHex() {
     const componentToHex = (c: any) => {
-      var hex = c.toString(16);
-      return hex.length == 1 ? '0' + hex : hex;
+      const hex = c.toString(16);
+      return hex.length == 1 ? `0${hex}` : hex;
     };
 
-    return (
-      '#' +
-      componentToHex(Math.floor(this.r)) +
-      componentToHex(Math.floor(this.g)) +
-      componentToHex(Math.floor(this.b))
-    );
+    return `#${componentToHex(Math.floor(this.r))}${componentToHex(Math.floor(this.g))}${componentToHex(
+      Math.floor(this.b),
+    )}`;
   }
 
   textColor() {
@@ -117,18 +108,9 @@ class Color {
   }
 
   luminance() {
-    const rg =
-      Math.floor(this.r) <= 10
-        ? this.r / 3294.0
-        : Math.pow(this.r / 269.0 + 0.0513, 2.4);
-    const gg =
-      Math.floor(this.g) <= 10
-        ? this.g / 3294.0
-        : Math.pow(this.g / 269.0 + 0.0513, 2.4);
-    const bg =
-      Math.floor(this.b) <= 10
-        ? this.b / 3294.0
-        : Math.pow(this.b / 269.0 + 0.0513, 2.4);
+    const rg = Math.floor(this.r) <= 10 ? this.r / 3294.0 : Math.pow(this.r / 269.0 + 0.0513, 2.4);
+    const gg = Math.floor(this.g) <= 10 ? this.g / 3294.0 : Math.pow(this.g / 269.0 + 0.0513, 2.4);
+    const bg = Math.floor(this.b) <= 10 ? this.b / 3294.0 : Math.pow(this.b / 269.0 + 0.0513, 2.4);
     return 0.2126 * rg + 0.7152 * gg + 0.0722 * bg;
   }
 
@@ -174,145 +156,145 @@ function setColors(background: any, accent: any) {
   const bgModal = background.tint(text, 0.02);
 
   const styleSheet = {
-    'html': {
-      'background-color': background.toCss(),
-      'color': text.toCss(),
+    "html": {
+      "background-color": background.toCss(),
+      "color": text.toCss(),
     },
-    'label': {
-      'color': text.toCss(),
+    "label": {
+      "color": text.toCss(),
     },
-    'a': {
-      'color': linkAccent.toCss(),
+    "a": {
+      "color": linkAccent.toCss(),
     },
-    'input': {
-      'color': text.toCss(),
+    "input": {
+      "color": text.toCss(),
     },
-    '.helper-text': {
-      'color': help.toCss(),
+    ".helper-text": {
+      "color": help.toCss(),
     },
-    '.ha-blue': {
-      'background-color': accent.toCss(),
-      'color': accentText.toCss(),
+    ".ha-blue": {
+      "background-color": accent.toCss(),
+      "color": accentText.toCss(),
     },
-    'nav .brand-logo': {
-      'color': accentText.toCss(),
+    "nav .brand-logo": {
+      "color": accentText.toCss(),
     },
-    'nav ul a': {
-      'color': accentText.toCss(),
+    "nav ul a": {
+      "color": accentText.toCss(),
     },
-    '.accent-title': {
-      'color': accentText.toCss(),
+    ".accent-title": {
+      "color": accentText.toCss(),
     },
-    'footer a:link': {
-      'text-decoration': 'underline',
-      'color': accentText.textColor().tint(accentText, 0.95).toCss(),
+    "footer a:link": {
+      "text-decoration": "underline",
+      "color": accentText.textColor().tint(accentText, 0.95).toCss(),
     },
-    '.accent-text': {
-      'color': accentText.textColor().tint(accentText, 0.95).toCss(),
+    ".accent-text": {
+      "color": accentText.textColor().tint(accentText, 0.95).toCss(),
     },
-    '.btn': {
-      'background-color': accent.toCss(),
+    ".btn": {
+      "background-color": accent.toCss(),
     },
-    '.btn:hover, .btn-large:hover, .btn-small:hover': {
-      'background-color': accent.toCss(),
-      'color': accentText.toCss(),
+    ".btn:hover, .btn-large:hover, .btn-small:hover": {
+      "background-color": accent.toCss(),
+      "color": accentText.toCss(),
     },
-    '.btn:focus, .btn-large:focus, .btn-small:focus, .btn-floating:focus': {
-      'background-color': focus.toCss(),
+    ".btn:focus, .btn-large:focus, .btn-small:focus, .btn-floating:focus": {
+      "background-color": focus.toCss(),
     },
-    '.modal .modal-footer .btn, .modal .modal-footer .btn-large, .modal .modal-footer .btn-small, .modal .modal-footer .btn-flat': {
-      'margin': '6px 0',
-      'background-color': accent.toCss(),
-      'color': accentText.toCss(),
+    ".modal .modal-footer .btn, .modal .modal-footer .btn-large, .modal .modal-footer .btn-small, .modal .modal-footer .btn-flat": {
+      "margin": "6px 0",
+      "background-color": accent.toCss(),
+      "color": accentText.toCss(),
     },
-    '.dropdown-content': {
-      'background-color': background.toCss(),
-      'box-shadow': bgShadow,
-      'webkit-box-shadow': bgShadow,
+    ".dropdown-content": {
+      "background-color": background.toCss(),
+      "box-shadow": bgShadow,
+      "webkit-box-shadow": bgShadow,
     },
-    '.dropdown-content li > a': {
-      'color': text.tint(background, 0.5).toCss(),
+    ".dropdown-content li > a": {
+      "color": text.tint(background, 0.5).toCss(),
     },
-    '.highlight-border': {
-      'border-color': accent.toCss(),
-      'border-width': '1px',
-      'border-style': 'solid',
+    ".highlight-border": {
+      "border-color": accent.toCss(),
+      "border-width": "1px",
+      "border-style": "solid",
     },
-    '.modal': {
-      'background-color': bgModal.toCss(),
-      'box-shadow': `box-shadow: 0 24px 38px 3px ${shadow1.toCss()}, 0 9px 46px 8px ${shadow2.toCss()}, 0 11px 15px -7px ${shadow3.toCss()}`,
+    ".modal": {
+      "background-color": bgModal.toCss(),
+      "box-shadow": `box-shadow: 0 24px 38px 3px ${shadow1.toCss()}, 0 9px 46px 8px ${shadow2.toCss()}, 0 11px 15px -7px ${shadow3.toCss()}`,
     },
-    '.modal .modal-footer': {
-      'background-color': bgModal.toCss(),
+    ".modal .modal-footer": {
+      "background-color": bgModal.toCss(),
     },
-    '.modal.modal-fixed-footer .modal-footer': {
-      'border-top': `1px solid ${text.withAlpha(0.1).toCss()}`,
+    ".modal.modal-fixed-footer .modal-footer": {
+      "border-top": `1px solid ${text.withAlpha(0.1).toCss()}`,
     },
     '[type="checkbox"].filled-in:checked + span:not(.lever)::before': {
-      'border-right': `2px solid ${text.toCss()}`,
-      'border-bottom': `2px solid ${text.toCss()}`,
+      "border-right": `2px solid ${text.toCss()}`,
+      "border-bottom": `2px solid ${text.toCss()}`,
     },
     '[type="checkbox"].filled-in:checked + span:not(.lever)::after': {
-      'border': `2px solid ${text.toCss()}`,
-      'background-color': accent.darken(0.2).saturate(1.2).toCss(),
+      "border": `2px solid ${text.toCss()}`,
+      "background-color": accent.darken(0.2).saturate(1.2).toCss(),
     },
-    '.input-field .prefix.active': {
-      'color': accent.toCss(),
+    ".input-field .prefix.active": {
+      "color": accent.toCss(),
     },
-    '.input-field > label': {
-      'color': help.toCss(),
+    ".input-field > label": {
+      "color": help.toCss(),
     },
-    '.input-field .helper-text': {
-      'color': help.toCss(),
+    ".input-field .helper-text": {
+      "color": help.toCss(),
     },
     'input:not([type]):focus:not([readonly]) + label, input[type="text"]:not(.browser-default):focus:not([readonly]) + label, input[type="password"]:not(.browser-default):focus:not([readonly]) + label, input[type="email"]:not(.browser-default):focus:not([readonly]) + label, input[type="url"]:not(.browser-default):focus:not([readonly]) + label, input[type="time"]:not(.browser-default):focus:not([readonly]) + label, input[type="date"]:not(.browser-default):focus:not([readonly]) + label, input[type="datetime"]:not(.browser-default):focus:not([readonly]) + label, input[type="datetime-local"]:not(.browser-default):focus:not([readonly]) + label, input[type="tel"]:not(.browser-default):focus:not([readonly]) + label, input[type="number"]:not(.browser-default):focus:not([readonly]) + label, input[type="search"]:not(.browser-default):focus:not([readonly]) + label, textarea.materialize-textarea:focus:not([readonly]) + label': {
-      'color': text.toCss(),
+      "color": text.toCss(),
     },
     'input.valid:not([type]), input.valid:not([type]):focus, input[type="text"].valid:not(.browser-default), input[type="text"].valid:not(.browser-default):focus, input[type="password"].valid:not(.browser-default), input[type="password"].valid:not(.browser-default):focus, input[type="email"].valid:not(.browser-default), input[type="email"].valid:not(.browser-default):focus, input[type="url"].valid:not(.browser-default), input[type="url"].valid:not(.browser-default):focus, input[type="time"].valid:not(.browser-default), input[type="time"].valid:not(.browser-default):focus, input[type="date"].valid:not(.browser-default), input[type="date"].valid:not(.browser-default):focus, input[type="datetime"].valid:not(.browser-default), input[type="datetime"].valid:not(.browser-default):focus, input[type="datetime-local"].valid:not(.browser-default), input[type="datetime-local"].valid:not(.browser-default):focus, input[type="tel"].valid:not(.browser-default), input[type="tel"].valid:not(.browser-default):focus, input[type="number"].valid:not(.browser-default), input[type="number"].valid:not(.browser-default):focus, input[type="search"].valid:not(.browser-default), input[type="search"].valid:not(.browser-default):focus, textarea.materialize-textarea.valid, textarea.materialize-textarea.valid:focus, .select-wrapper.valid > input.select-dropdown': {
-      'border-bottom': `1px solid ${accent.toCss()}`,
-      '-webkit-box-shadow': ` 0 1px 0 0 ${accent.toCss()}`,
-      'box-shadow': `0 1px 0 0 ${accent.toCss()}`,
+      "border-bottom": `1px solid ${accent.toCss()}`,
+      "-webkit-box-shadow": ` 0 1px 0 0 ${accent.toCss()}`,
+      "box-shadow": `0 1px 0 0 ${accent.toCss()}`,
     },
     'input:not([type]):focus:not([readonly]), input[type="text"]:not(.browser-default):focus:not([readonly]), input[type="password"]:not(.browser-default):focus:not([readonly]), input[type="email"]:not(.browser-default):focus:not([readonly]), input[type="url"]:not(.browser-default):focus:not([readonly]), input[type="time"]:not(.browser-default):focus:not([readonly]), input[type="date"]:not(.browser-default):focus:not([readonly]), input[type="datetime"]:not(.browser-default):focus:not([readonly]), input[type="datetime-local"]:not(.browser-default):focus:not([readonly]), input[type="tel"]:not(.browser-default):focus:not([readonly]), input[type="number"]:not(.browser-default):focus:not([readonly]), input[type="search"]:not(.browser-default):focus:not([readonly]), textarea.materialize-textarea:focus:not([readonly])': {
-      'border-bottom': `1px solid ${accent.toCss()}`,
-      '-webkit-box-shadow': `0 1px 0 0 ${accent.toCss()}`,
-      'box-shadow': `0 1px 0 0 ${accent.toCss()}`,
+      "border-bottom": `1px solid ${accent.toCss()}`,
+      "-webkit-box-shadow": `0 1px 0 0 ${accent.toCss()}`,
+      "box-shadow": `0 1px 0 0 ${accent.toCss()}`,
     },
-    '.card': {
-      'background-color': background.toCss(),
-      'box-shadow': `0 2px 2px 0 ${shadow1.toCss()}, 0 3px 1px -2px ${shadow2.toCss()}, 0 1px 5px 0 ${shadow3.toCss()}`,
+    ".card": {
+      "background-color": background.toCss(),
+      "box-shadow": `0 2px 2px 0 ${shadow1.toCss()}, 0 3px 1px -2px ${shadow2.toCss()}, 0 1px 5px 0 ${shadow3.toCss()}`,
     },
-    'nav a': {
-      'color': accentText.toCss(),
+    "nav a": {
+      "color": accentText.toCss(),
     },
-    '.btn, .btn-large, .btn-small': {
-      'color': accentText.toCss(),
+    ".btn, .btn-large, .btn-small": {
+      "color": accentText.toCss(),
     },
-    '.bmc-button': {
-      'line-height': '15px',
-      'height': '25px',
-      'text-decoration': 'none',
-      'display': 'inline-flex',
-      'background-color': background.toCss(),
-      'border-radius': '3px',
-      'border': '1px solid transparent',
-      'padding': '3px 2px 3px 2px',
-      'constter-spacing': '0.6px',
-      'box-shadow': `0px 1px 2px ${shadowBmc.toCss()}`,
-      '-webkit-box-shadow': `0px 1px 2px 2px ${shadowBmc.toCss()}`,
-      'margin': '0 auto',
-      'font-family': "'Cookie', cursive",
-      '-webkit-box-sizing': 'border-box',
-      'box-sizing': 'border-box',
-      '-o-transition': '0.3s all linear',
-      '-webkit-transition': '0.3s all linear',
-      '-moz-transition': '0.3s all linear',
-      '-ms-transition': '0.3s all linear',
-      'transition': '0.3s all linear',
-      'font-size': '17px',
+    ".bmc-button": {
+      "line-height": "15px",
+      "height": "25px",
+      "text-decoration": "none",
+      "display": "inline-flex",
+      "background-color": background.toCss(),
+      "border-radius": "3px",
+      "border": "1px solid transparent",
+      "padding": "3px 2px 3px 2px",
+      "constter-spacing": "0.6px",
+      "box-shadow": `0px 1px 2px ${shadowBmc.toCss()}`,
+      "-webkit-box-shadow": `0px 1px 2px 2px ${shadowBmc.toCss()}`,
+      "margin": "0 auto",
+      "font-family": "'Cookie', cursive",
+      "-webkit-box-sizing": "border-box",
+      "box-sizing": "border-box",
+      "-o-transition": "0.3s all linear",
+      "-webkit-transition": "0.3s all linear",
+      "-moz-transition": "0.3s all linear",
+      "-ms-transition": "0.3s all linear",
+      "transition": "0.3s all linear",
+      "font-size": "17px",
     },
-    '.bmc-button span': {
-      'color': text.toCss(),
+    ".bmc-button span": {
+      "color": text.toCss(),
     },
   };
 
@@ -320,19 +302,19 @@ function setColors(background: any, accent: any) {
     // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
     const selectorProperties = Object.keys(styleSheet[selector]).map(
       // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
-      (property) => `    ${property}: ${styleSheet[selector][property]};`
+      (property) => `    ${property}: ${styleSheet[selector][property]};`,
     );
 
-    return `${selector} {\n${selectorProperties.join('\n')}\n}`;
+    return `${selector} {\n${selectorProperties.join("\n")}\n}`;
   });
 
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  themeStyleContainer.innerHTML = properties.join('\n');
+  themeStyleContainer.innerHTML = properties.join("\n");
 }
 
 setColors(
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   Color.parse(themeStyleContainer.dataset.backgroundColor),
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  Color.parse(themeStyleContainer.dataset.accentColor)
+  Color.parse(themeStyleContainer.dataset.accentColor),
 );
