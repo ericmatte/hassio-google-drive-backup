@@ -7,8 +7,8 @@ const src = "./hassio-google-drive-backup/backup/frontend/src";
 
 module.exports = {
   entry: {
-    main: `${src}/index.ts`,
-    back: `${src}/back.ts`,
+    "index": `${src}/index.ts`,
+    "server-index": `${src}/serverIndex.ts`,
   },
   output: {
     path: path.resolve(__dirname, "./public"),
@@ -23,6 +23,10 @@ module.exports = {
       {
         test: /\.s[ac]ss$/i,
         use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+      },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
     ],
   },
